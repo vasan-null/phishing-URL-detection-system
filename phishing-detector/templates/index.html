@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phishing URL Detector</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header><h1>Phishing URL Detector</h1></header>
+  <main>
+    <h2>Check a website URL</h2>
+    <p class="hint">Enter a URL to analyse. The page is never opened or visited.</p>
+    <form method="post">
+      <input type="text" name="url" placeholder="https://example.com" value="{{ url }}" required>
+      <button type="submit">Check</button>
+    </form>
+
+    {% if error %}
+      <div class="card error">{{ error }}</div>
+    {% endif %}
+
+    {% if result %}
+      {% set cls = 'bad' if result.verdict == 'Phishing' else 'good' %}
+      <div class="card {{ cls }}">
+        <h3>Verdict: {{ result.verdict|upper }} &nbsp;|&nbsp; Risk score: {{ result.risk_score }}% ({{ result.level }})</h3>
+        {% if result.reasons %}
+          <p><strong>Why this was flagged:</strong></p>
+          <ul>
+            {% for r in result.reasons %}<li>{{ r }}</li>{% endfor %}
+          </ul>
+        {% else %}
+          <p>No strong phishing indicators were found for this URL.</p>
+        {% endif %}
+        <p class="hint">This is a risk estimate, not a guarantee. Always verify the website address through a trusted channel.</p>
+      </div>
+    {% endif %}
+  </main>
+</body>
+</html>
